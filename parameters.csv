@@ -1,0 +1,9 @@
+parameter,value,unit,source
+radius,1.073,Earth radii,NASA Exoplanet Catalog
+mass,1.25,Earth masses,NASA Exoplanet Catalog
+orbital_period,37.4,days,NASA Exoplanet Catalog
+semi_major_axis,0.1633,AU,NASA Exoplanet Catalog
+eccentricity,0.04,,NASA Exoplanet Catalog
+stellar_insolation,0.86,Earth insolation,Gilbert et al. 2020
+equilibrium_temperature,269,K,Rodriguez et al. 2020
+distance,31.1,pc,Gilbert et al. 2020
