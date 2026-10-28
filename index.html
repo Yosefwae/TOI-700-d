@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TOI-700 d — An Earth-sized world in a red dwarf’s habitable zone</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F7; --surface:#FFFFFF; --ink:#13203B; --muted:#56617D; --line:#D3D9E6;
+  --ember:#B9501C; --hz:#16806F; --chip:#E3E8F2;
+  --space:#050A1C; --space-ink:#ECE7DC; --space-muted:#A5AFCB;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0A1230; --surface:#101C40; --ink:#ECE7DC; --muted:#9EA9C7; --line:#24335E;
+    --ember:#F29A5B; --hz:#6FD3BF; --chip:#17254F; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0A1230; --surface:#101C40; --ink:#ECE7DC; --muted:#9EA9C7; --line:#24335E;
+  --ember:#F29A5B; --hz:#6FD3BF; --chip:#17254F; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--ember);text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--ember);outline-offset:3px;border-radius:4px}
+img,canvas{max-width:100%}
+.col{max-width:1180px;margin:0 auto;padding:0 28px}
+.prose{max-width:66ch}
+h1,h2,h3{font-family:var(--serif);font-weight:500;letter-spacing:-.01em;margin:0}
+h2{font-size:clamp(2rem,4.4vw,3.1rem);line-height:1.08;margin-bottom:18px;font-variation-settings:"opsz" 120}
+h3{font-size:1.3rem;line-height:1.25;margin-bottom:8px}
+p{margin:0 0 1em}
+.lede{font-size:1.15rem;color:var(--muted)}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- Hero: live system ---------- */
+.hero{position:relative;background:var(--space);color:var(--space-ink);overflow:hidden}
+#sky{display:block;width:100%;height:min(92vh,860px);min-height:720px;touch-action:manipulation}
+.hero-copy{position:absolute;left:0;right:0;top:0;pointer-events:none}.hero-copy .stack{max-width:min(420px,36vw);pointer-events:auto}
+.hero-copy .col{padding-top:56px}
+.hero-copy h1{font-size:clamp(3.6rem,7.5vw,7.6rem);line-height:.86;font-weight:300;font-variation-settings:"opsz" 144;letter-spacing:-.035em}
+.hero-copy h1 .tw{display:inline-block;white-space:nowrap;font-weight:inherit}
+.hero-copy h1 span{display:block;font-size:clamp(1.15rem,1.6vw,1.5rem);font-weight:400;letter-spacing:0;line-height:1.2;margin-top:18px;color:var(--space-muted);max-width:20ch}
+.sim-ui{position:absolute;right:0;bottom:0;left:0;pointer-events:none}
+.sim-ui .col{display:flex;justify-content:flex-end;padding-bottom:28px}.sim-controls{pointer-events:auto}
+.picker{margin-top:20px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:600 .95rem var(--sans);color:var(--space-ink);background:#ffffff10;border:1px solid #ffffff2a;border-radius:999px;padding:8px 15px;cursor:pointer;min-height:40px}
+.chip[aria-pressed="true"]{background:#F29A5B;border-color:#F29A5B;color:#1B0E05}
+.chip:hover{border-color:#ffffff66}
+.sim-controls{display:flex;align-items:center;gap:14px;color:var(--space-muted);font-size:.92rem}
+.sim-controls input{accent-color:#F29A5B;width:140px}
+.icon-btn{width:42px;height:42px;border-radius:50%;border:1px solid #ffffff33;background:#ffffff10;color:var(--space-ink);cursor:pointer;font-size:1rem}
+.sim-info{margin-top:26px;background:#081131cc;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid #ffffff1f;border-radius:14px;padding:18px 20px;font-size:.93rem}
+.sim-info h3{font-size:1.5rem;color:#fff}
+.sim-info dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:10px 0 0}
+.sim-info dt{color:var(--space-muted)}
+.sim-info dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
+.sim-info .tag{display:inline-block;margin-top:10px;font-size:.85rem;color:#6FD3BF}
+.sim-day{font-variant-numeric:tabular-nums;color:var(--space-ink)}
+.hint{color:var(--space-muted);font-size:.85rem}
+@media (max-width:860px){
+  #sky{height:118vw;min-height:420px;max-height:640px}
+  .hero-copy{position:static;background:var(--space)}
+  .hero-copy .col{padding-top:34px;padding-bottom:8px}
+  .hero-copy .stack{max-width:none}.sim-info{margin:22px 0 0}
+  .sim-ui{position:static}
+  .sim-ui .col{padding-top:14px;justify-content:flex-start}
+}
+
+/* ---------- Sections ---------- */
+section{padding:96px 0;border-top:1px solid var(--line)}
+section:first-of-type{border-top:0}
+.split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start}
+@media (max-width:900px){.split{grid-template-columns:1fr;gap:28px}section{padding:72px 0}}
+
+/* facts table */
+.facts{width:100%;border-collapse:collapse;font-size:1rem}
+.facts th,.facts td{padding:14px 0;border-bottom:1px solid var(--line);vertical-align:top;text-align:left}
+.facts th{font-weight:500;width:36%;padding-right:16px}
+.facts .val{font-family:var(--serif);font-size:1.45rem;white-space:nowrap;padding-right:16px}
+.facts small{display:block;color:var(--muted);font-size:.86rem;line-height:1.45;margin-top:2px}
+.bar{position:relative;height:8px;background:var(--chip);border-radius:4px;margin-top:10px;max-width:220px}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--ember);border-radius:4px}
+.bar b{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);opacity:.55}
+.facts-legend{font-size:.85rem;color:var(--muted);margin-top:14px}
+.scroll-x{overflow-x:auto}
+
+/* light panel */
+.panel{background:var(--space);color:var(--space-ink);border-radius:20px;overflow:hidden}
+.panel canvas{display:block;width:100%}
+#starview{height:280px}
+#curve{height:240px;border-top:1px solid #ffffff14}
+.panel-ui{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:18px 26px;padding:22px 24px 24px;border-top:1px solid #ffffff14}
+.ctl label{display:flex;justify-content:space-between;gap:10px;font-size:.9rem;color:var(--space-muted);margin-bottom:6px}
+.ctl output{color:var(--space-ink);font-variant-numeric:tabular-nums}
+.ctl input[type=range]{width:100%;accent-color:#F29A5B}
+.readouts{display:flex;gap:30px;flex-wrap:wrap;padding:0 24px 22px}
+.readouts div{font-size:.85rem;color:var(--space-muted)}
+.readouts strong{display:block;font-family:var(--serif);font-weight:500;font-size:1.7rem;color:var(--space-ink);font-variant-numeric:tabular-nums}
+.panel .chips{padding:20px 24px 0}
+.panel-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:20px 24px 0}
+.panel-row .chips{padding:0}
+
+/* climate */
+.temp-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:26px}
+.temp-box input{width:100%;accent-color:var(--ember)}
+.temps{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:20px 0 8px}
+.temps strong{display:block;font-family:var(--serif);font-weight:500;font-size:2.4rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.temps span{color:var(--muted);font-size:.9rem}
+.flux{margin-top:30px}
+.flux-row{display:grid;grid-template-columns:110px 1fr 52px;align-items:center;gap:12px;font-size:.92rem;margin:9px 0}
+.flux-track{position:relative;height:14px;background:var(--chip);border-radius:7px;overflow:hidden}
+.flux-track .zone{position:absolute;top:0;bottom:0;background:color-mix(in srgb,var(--hz) 26%,transparent)}
+.flux-track i{position:absolute;top:0;bottom:0;left:0;background:var(--ember);border-radius:7px}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:30px;margin-top:56px}
+.notes p{color:var(--muted)}
+
+/* math */
+.eq{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0;border-top:1px solid var(--line)}
+.eq article{padding:26px 26px 26px 0;border-bottom:1px solid var(--line)}
+.eq .f{font-family:var(--serif);font-size:1.25rem;font-style:italic;margin:6px 0 10px;overflow-x:auto;white-space:nowrap}
+.eq .r{font-variant-numeric:tabular-nums}
+.eq .r b{font-weight:600;color:var(--ember)}
+
+/* sources + about */
+.refs{list-style:none;padding:0;margin:0}
+.refs li{padding:14px 0;border-bottom:1px solid var(--line)}
+.refs span{display:block;color:var(--muted);font-size:.9rem}
+.about{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--ember);border-radius:6px;padding:30px 32px}
+.about h2{font-size:1.9rem}
+footer{padding:40px 0 56px;color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <canvas id="sky" aria-label="Live top-down simulation of the four known planets orbiting the red dwarf TOI-700, with the habitable zone shaded"></canvas>
+  <div class="hero-copy"><div class="col"><div class="stack">
+    <h1><b class="tw">TOI-700 d</b><span>An Earth-sized planet circling a small red star, 101 light-years away, inside the zone where water could stay liquid.</span></h1>
+    <aside class="sim-info" id="info" aria-live="polite"></aside>
+    <div class="picker">
+      <div class="chips" role="group" aria-label="Choose a planet">
+        <button class="chip" data-p="b">b</button>
+        <button class="chip" data-p="c">c</button>
+        <button class="chip" data-p="e">e</button>
+        <button class="chip" data-p="d" aria-pressed="true">d</button>
+      </div>
+      <p class="hint" style="margin:10px 0 0">Real orbital periods and distances. Planet sizes are enlarged so you can see them.</p>
+    </div>
+  </div></div></div>
+  <div class="sim-ui"><div class="col">
+    <div class="sim-controls">
+      <button class="icon-btn" id="play" aria-label="Pause">❚❚</button>
+      <label for="speed">Speed</label>
+      <input id="speed" type="range" min="0.5" max="12" step="0.5" value="3" aria-describedby="day">
+      <span class="sim-day" id="day">Day 0</span>
+    </div>
+  </div></div>
+</header>
+
+<main>
+
+<section id="numbers"><div class="col split">
+  <div class="prose">
+    <h2>Almost Earth’s twin, on paper</h2>
+    <p class="lede">NASA’s TESS satellite spotted TOI-700 d in 2019, and the Spitzer Space Telescope confirmed it. It was the first Earth-sized planet TESS found in a star’s habitable zone.</p>
+    <p>Its star, TOI-700, is an M dwarf: about 40% the size and mass of the Sun, and much cooler. That’s why a planet that orbits this close still gets less starlight than Earth does.</p>
+    <p>The light you’d catch from TOI-700 tonight left it around 1925. You’d need a telescope though; the star is far too faint for the naked eye.</p>
+  </div>
+  <div class="scroll-x">
+    <table class="facts" id="facts"></table>
+    <p class="facts-legend">Bars compare each value to Earth (the dark line marks Earth = 1).</p>
+  </div>
+</div></section>
+
+<section id="transit"><div class="col">
+  <div class="prose">
+    <h2>Found by a tiny shadow</h2>
+    <p class="lede">Nobody has seen TOI-700 d directly. TESS noticed the star dim very slightly, every 37.4 days, as the planet crossed in front of it. That dip is called a transit.</p>
+    <p>Try it below. The planet is drawn to true scale against the star, which is why it’s so hard to spot. Add noise to see why astronomers average many transits before they trust a signal.</p>
+  </div>
+  <div class="panel" style="margin-top:34px">
+    <div class="panel-row">
+      <div class="chips" role="group" aria-label="Load a planet">
+        <button class="chip" data-t="b">b</button>
+        <button class="chip" data-t="c">c</button>
+        <button class="chip" data-t="e">e</button>
+        <button class="chip" data-t="d" aria-pressed="true">d</button>
+      </div>
+      <button class="icon-btn" id="tplay" aria-label="Pause transit">❚❚</button>
+    </div>
+    <canvas id="starview" aria-label="Star disk with the planet crossing in front of it"></canvas>
+    <canvas id="curve" aria-label="Light curve showing the star’s brightness over time"></canvas>
+    <div class="readouts">
+      <div><strong id="rDepth">–</strong>Dip in brightness</div>
+      <div><strong id="rDur">–</strong>Transit length</div>
+      <div><strong id="rSnr">–</strong>Signal ÷ noise</div>
+    </div>
+    <div class="panel-ui">
+      <div class="ctl"><label for="kR">Planet radius <output id="oR"></output></label><input id="kR" type="range" min="0.4" max="3" step="0.01"></div>
+      <div class="ctl"><label for="kB">Impact parameter <output id="oB"></output></label><input id="kB" type="range" min="0" max="0.95" step="0.01" value="0.3"></div>
+      <div class="ctl"><label for="kN">Noise per point <output id="oN"></output></label><input id="kN" type="range" min="0" max="2000" step="50" value="700"></div>
+      <div class="ctl"><label for="kS">Transits averaged <output id="oS"></output></label><input id="kS" type="range" min="1" max="25" step="1" value="1"></div>
+    </div>
+  </div>
+  <p class="facts-legend" style="max-width:70ch">Impact parameter is how far from the star’s center the planet crosses (0 = dead center). Limb darkening and noise are illustrative, not fitted to TESS data.</p>
+</div></section>
+
+<section id="climate"><div class="col">
+  <div class="split">
+    <div class="prose">
+      <h2>Could it hold water?</h2>
+      <p class="lede">“Habitable zone” only means the starlight is right for liquid water. It doesn’t mean the planet has water, air, or life.</p>
+      <p>A planet’s basic temperature depends on how much starlight it gets and how much it reflects. Move the slider to change the reflectivity (albedo) and compare with Earth.</p>
+      <p>Earth’s number comes out below freezing too. Our real average is about 15 °C because greenhouse gases trap heat. TOI-700 d would need an atmosphere doing the same.</p>
+    </div>
+    <div>
+      <div class="temp-box">
+        <label for="alb" style="display:flex;justify-content:space-between;font-size:.95rem"><span>Albedo (how much light it reflects)</span><output id="oA" class="num"></output></label>
+        <input id="alb" type="range" min="0" max="0.7" step="0.01" value="0.3">
+        <div class="temps">
+          <div><strong id="tD"></strong><span>TOI-700 d, no atmosphere</span></div>
+          <div><strong id="tE"></strong><span>Earth, no atmosphere</span></div>
+        </div>
+        <div class="flux" id="flux"><div style="font-size:.95rem;margin-bottom:6px">Starlight received (Earth = 1)</div></div>
+        <p class="facts-legend" style="margin-bottom:0">Green band: approximate habitable zone for a star like TOI-700. Inner edge differs between conservative and optimistic estimates.</p>
+      </div>
+    </div>
+  </div>
+  <div class="notes">
+    <div><h3>One side in daylight forever?</h3><p>Planets this close to small stars are expected to become tidally locked, with one face always toward the star. Climate models have to work out whether winds can move enough heat to the night side.</p></div>
+    <div><h3>What the models say</h3><p>Suissa et al. (2020) ran 20 3D climate scenarios with different atmospheres, surfaces, and rotation. Several kept temperate conditions, but the atmospheric signals they predict are under 10 parts per million, too faint for today’s telescopes.</p></div>
+    <div><h3>A neighbor in the zone</h3><p>In 2023 the team announced TOI-700 e, slightly smaller than Earth and orbiting just inside d. It sits in the optimistic habitable zone.</p></div>
+  </div>
+</div></section>
+
+<section id="math"><div class="col">
+  <div class="prose">
+    <h2>Check the math</h2>
+    <p class="lede">Every number on this page comes from the same few catalog values and these formulas. You can redo any of them with a calculator.</p>
+  </div>
+  <div class="eq" id="eq" style="margin-top:30px"></div>
+  <p class="facts-legend">Inputs: star temperature 3480 K, radius 0.42 R☉, mass 0.415 M☉; planet radius 1.073 R⊕, estimated mass 1.25 M⊕, period 37.426 days.</p>
+</div></section>
+
+<section id="sources"><div class="col split">
+  <div class="prose">
+    <h2>Sources</h2>
+    <p class="lede">Values come from NASA’s catalog and the discovery papers. Explore the system in 3D with NASA’s own tool.</p>
+    <p><a href="https://eyes.nasa.gov/apps/exo/#/planet/TOI-700_d" target="_blank" rel="noopener">Open TOI-700 d in NASA Eyes on Exoplanets</a></p>
+  </div>
+  <ul class="refs">
+    <li><a href="https://science.nasa.gov/exoplanet-catalog/toi-700-d/" target="_blank" rel="noopener">NASA Exoplanet Catalog: TOI-700 d</a><span>Current radius, mass estimate, period, orbit</span></li>
+    <li><a href="https://science.nasa.gov/exoplanet-catalog/toi-700-e/" target="_blank" rel="noopener">NASA Exoplanet Catalog: TOI-700 e</a><span>The fourth planet, reported 2023</span></li>
+    <li><a href="https://arxiv.org/abs/2001.00952" target="_blank" rel="noopener">Gilbert et al. 2020</a><span>Discovery and validation of the TOI-700 system</span></li>
+    <li><a href="https://arxiv.org/abs/2001.00954" target="_blank" rel="noopener">Rodriguez et al. 2020</a><span>Spitzer confirmation of TOI-700 d</span></li>
+    <li><a href="https://arxiv.org/abs/2001.00955" target="_blank" rel="noopener">Suissa et al. 2020</a><span>3D climate simulations of TOI-700 d</span></li>
+    <li><a href="https://arxiv.org/abs/2301.03617" target="_blank" rel="noopener">Gilbert et al. 2023</a><span>Discovery of TOI-700 e, updated planet sizes</span></li>
+    <li><a href="https://arxiv.org/abs/1301.6674" target="_blank" rel="noopener">Kopparapu et al. 2013</a><span>Habitable zone estimates used for the green band</span></li>
+  </ul>
+</div></section>
+
+<section id="about"><div class="col">
+  <div class="about prose">
+    <h2>About this project</h2>
+    <p>I’m Yosef Wael Samir. This website was built with AI tools (ChatGPT and Claude) based on my direction. I didn’t write the code myself. I used it as a learning project: I studied the science behind TOI-700 d and worked to understand everything presented here.</p>
+  </div>
+</div></section>
+
+</main>
+<footer><div class="col">TOI-700 d interactive explainer. No real image of the planet’s surface exists; every drawing here is a model or diagram.</div></footer>
+
+<script>
+(()=>{
+/* ---------- Shared data (one source of truth) ---------- */
+const STAR={T:3480,R:0.42,M:0.415};
+const RSUN_AU=0.00465047, REARTH_RSUN=6371/695700, AU_KM=1.495978707e8;
+const L=STAR.R**2*(STAR.T/5772)**4;                 // luminosity, L☉
+const aOf=P=>Math.cbrt(STAR.M*(P/365.25)**2);       // Kepler, AU
+const PL={
+  b:{name:'TOI-700 b',P:9.977,R:0.91,col:'#c9b49c',ph:0.6},
+  c:{name:'TOI-700 c',P:16.051,R:2.63,col:'#9fb6e6',ph:2.4},
+  e:{name:'TOI-700 e',P:27.809,R:0.953,col:'#d9c3a6',ph:4.1},
+  d:{name:'TOI-700 d',P:37.426,R:1.073,M:1.25,col:'#8fd3c2',ph:1.2}
+};
+for(const k in PL){const p=PL[k];p.a=aOf(p.P);p.S=L/p.a**2;}
+const HZ={optIn:1.49,consIn:0.90,out:0.23};          // S_eff, approximate
+const aS=S=>Math.sqrt(L/S);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(x,d=2)=>x.toFixed(d);
+
+/* ---------- Canvas helper ---------- */
+function fit(cv){const r=cv.getBoundingClientRect(),dpr=Math.min(devicePixelRatio||1,2);
+  cv.width=Math.round(r.width*dpr);cv.height=Math.round(r.height*dpr);
+  const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);return {c,w:r.width,h:r.height};}
+
+/* ---------- Hero simulation ---------- */
+const sky=document.getElementById('sky');let S=fit(sky);
+let stars=[];function seedStars(){stars=[];const n=Math.round(S.w*S.h/2600);
+  for(let i=0;i<n;i++)stars.push([Math.random()*S.w,Math.random()*S.h,Math.random()*1.1+.2,Math.random()*.6+.2]);}
+seedStars();
+let sel='d',t=0,playing=!reduce,last=performance.now();
+const speedEl=document.getElementById('speed'),dayEl=document.getElementById('day'),playBtn=document.getElementById('play');
+function layout(){const wide=S.w>860;if(!wide){const R=Math.min(S.w,S.h)*.44;return {cx:S.w/2,cy:S.h/2,s:R/0.168};}
+  const tw=document.querySelector('.tw').getBoundingClientRect(),st=document.querySelector('.stack').getBoundingClientRect(),hr=sky.getBoundingClientRect();
+  const left=Math.max(tw.right,st.right)-hr.left+30,free=S.w-left;
+  const R=Math.min(S.h*.4,free*.42),cx=left+free/2,cy=S.h*.47;return {cx,cy,s:R/0.168};}
+function drawSky(){
+  const c=S.c,{cx,cy,s}=layout();
+  c.fillStyle='#050A1C';c.fillRect(0,0,S.w,S.h);
+  for(const st of stars){c.globalAlpha=st[3];c.fillStyle='#fff';c.beginPath();c.arc(st[0],st[1],st[2],0,7);c.fill();}
+  c.globalAlpha=1;
+  // habitable zone
+  const ring=(r1,r2,col)=>{c.beginPath();c.arc(cx,cy,r2,0,Math.PI*2);c.arc(cx,cy,r1,0,Math.PI*2,true);c.fillStyle=col;c.fill('evenodd');};
+  ring(aS(HZ.optIn)*s,aS(HZ.consIn)*s,'rgba(111,211,191,.07)');
+  ring(aS(HZ.consIn)*s,aS(HZ.out)*s,'rgba(111,211,191,.13)');
+  c.fillStyle='rgba(111,211,191,.75)';c.font='500 12px "IBM Plex Sans",sans-serif';
+  c.fillText('habitable zone',cx+aS(HZ.consIn)*s*0.74+8,cy+aS(HZ.consIn)*s*0.74+14);
+  // star glow
+  const g=c.createRadialGradient(cx,cy,0,cx,cy,70);g.addColorStop(0,'rgba(255,200,140,1)');g.addColorStop(.18,'rgba(255,140,70,.9)');g.addColorStop(.45,'rgba(240,90,40,.25)');g.addColorStop(1,'rgba(240,90,40,0)');
+  c.fillStyle=g;c.beginPath();c.arc(cx,cy,70,0,7);c.fill();
+  // orbits & planets
+  for(const k of ['b','c','e','d']){const p=PL[k],r=p.a*s,on=k===sel;
+    c.strokeStyle=on?'rgba(242,154,91,.75)':'rgba(180,195,235,.22)';c.lineWidth=on?1.5:1;
+    c.beginPath();c.arc(cx,cy,r,0,7);c.stroke();
+    const ang=p.ph+2*Math.PI*t/p.P,x=cx+r*Math.cos(ang),y=cy+r*Math.sin(ang),pr=2.5+p.R*3.4;
+    // day/night shading toward star
+    const sg=c.createRadialGradient(x-(x-cx)/r*pr*.5,y-(y-cy)/r*pr*.5,0,x,y,pr);
+    sg.addColorStop(0,p.col);sg.addColorStop(1,'#10162c');
+    c.fillStyle=sg;c.beginPath();c.arc(x,y,pr,0,7);c.fill();
+    if(on){c.strokeStyle='#F29A5B';c.lineWidth=1.5;c.beginPath();c.arc(x,y,pr+6,0,7);c.stroke();}
+    c.fillStyle=on?'#fff':'rgba(220,228,250,.7)';c.font=(on?'600 14px':'500 12px')+' "IBM Plex Sans",sans-serif';
+    c.fillText(k,x+pr+8,y+4);
+    p._x=x;p._y=y;p._r=pr;}
+  dayEl.textContent='Day '+t.toFixed(1);
+}
+function info(){const p=PL[sel],inHZ=p.S<=HZ.optIn&&p.S>=HZ.out,cons=p.S<=HZ.consIn&&p.S>=HZ.out;
+  const teq=STAR.T*Math.sqrt(STAR.R*RSUN_AU/(2*p.a));
+  document.getElementById('info').innerHTML=`<h3>${p.name}</h3><dl>
+  <dt>Year length</dt><dd>${fmt(p.P,1)} days</dd>
+  <dt>Distance from star</dt><dd>${fmt(p.a,3)} AU</dd>
+  <dt>Size</dt><dd>${sel==='b'?'≈ ':''}${fmt(p.R,2)} × Earth</dd>
+  <dt>Starlight</dt><dd>${fmt(p.S,2)} × Earth</dd>
+  <dt>Bare-rock temp.</dt><dd>${Math.round(teq)} K</dd></dl>
+  <span class="tag" style="${inHZ?'':'color:#A5AFCB'}">${cons?'In the conservative habitable zone':inHZ?'In the optimistic habitable zone':'Too hot for liquid water'}</span>`;
+}
+
+function frame(now){const dt=Math.min((now-last)/1000,.1);last=now;if(playing)t+=dt*parseFloat(speedEl.value);drawSky();requestAnimationFrame(frame);}
+document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{sel=b.dataset.p;
+  document.querySelectorAll('[data-p]').forEach(x=>x.setAttribute('aria-pressed',x===b));info();});
+sky.addEventListener('click',e=>{const r=sky.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+  for(const kk in PL){const p=PL[kk];if(Math.hypot(p._x-x,p._y-y)<p._r+12){document.querySelector(`[data-p="${kk}"]`).click();break;}}});
+playBtn.onclick=()=>{playing=!playing;playBtn.textContent=playing?'❚❚':'▶';playBtn.setAttribute('aria-label',playing?'Pause':'Play');};
+if(!playing){playBtn.textContent='▶';playBtn.setAttribute('aria-label','Play');}
+info();requestAnimationFrame(frame);
+
+/* ---------- Facts table ---------- */
+const d=PL.d,teq0=STAR.T*Math.sqrt(STAR.R*RSUN_AU/(2*d.a)),g=d.M/d.R**2,rho=d.M/d.R**3;
+const rows=[
+ ['Radius',fmt(d.R,3)+' R⊕',d.R,'Measured from the transit depth.'],
+ ['Mass','≈ '+fmt(d.M,2)+' M⊕',d.M,'Not measured yet. Estimated from the radius, assuming a rocky planet.'],
+ ['Year',fmt(d.P,1)+' days',d.P/365.25,'One full orbit of its star.'],
+ ['Distance from star',fmt(d.a,4)+' AU',d.a,'About 40% of Mercury’s distance from the Sun.'],
+ ['Starlight received',fmt(d.S,2)+' × Earth',d.S,'Calculated from the star’s brightness and the orbit.'],
+ ['Surface gravity','≈ '+fmt(g,2)+' g',g,'Depends on the estimated mass.'],
+ ['Density','≈ '+fmt(rho,2)+' × Earth',rho,'Consistent with rock and iron, like Earth.']
+];
+const mx=2;
+document.getElementById('facts').innerHTML=rows.map(r=>`<tr><th scope="row">${r[0]}<small>${r[3]}</small></th><td class="val num">${r[1]}<div class="bar" aria-hidden="true"><i style="width:${Math.min(r[2]/mx,1)*100}%"></i><b style="left:50%"></b></div></td></tr>`).join('');
+
+/* ---------- Transit lab ---------- */
+const sv=document.getElementById('starview'),cvv=document.getElementById('curve');
+let SV=fit(sv),CV=fit(cvv);
+const kR=document.getElementById('kR'),kB=document.getElementById('kB'),kN=document.getElementById('kN'),kS=document.getElementById('kS');
+let tp=PL.d,tt=-1,tplaying=!reduce,noise=[];
+const u1=0.4,u2=0.3,Iavg=1-u1/3-u2/6;
+const I=r=>{const mu=Math.sqrt(Math.max(0,1-r*r));return 1-u1*(1-mu)-u2*(1-mu)**2;};
+function overlap(z,k){if(z>=1+k)return 0;if(z<=1-k)return Math.PI*k*k;if(z<=k-1)return Math.PI;
+  const a=k*k*Math.acos((z*z+k*k-1)/(2*z*k)),b=Math.acos((z*z+1-k*k)/(2*z)),c=.5*Math.sqrt((-z+k+1)*(z+k-1)*(z-k+1)*(z+k+1));return a+b-c;}
+function model(){const k=parseFloat(kR.value)*REARTH_RSUN/STAR.R,b=parseFloat(kB.value);
+  const aR=tp.a/(STAR.R*RSUN_AU),v=2*Math.PI*aR/(tp.P*24);           // stellar radii per hour
+  const half=Math.sqrt(Math.max((1+k)**2-b*b,0))/v,dur=2*half;
+  const flux=h=>{const x=v*h,z=Math.hypot(x,b);return 1-overlap(z,k)/Math.PI*I(Math.min(z,.999))/Iavg;};
+  return {k,b,v,dur,half,flux,range:Math.max(half*1.7,1.5)};}
+function regenNoise(){noise=[];for(let i=0;i<160;i++){let u=0;for(let j=0;j<6;j++)u+=Math.random();noise.push((u-3)/Math.sqrt(.5));}}
+regenNoise();
+function loadPlanet(key){tp=PL[key];kR.value=tp.R;document.querySelectorAll('[data-t]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.t===key));regenNoise();}
+function drawTransit(){
+  const m=model(),c=SV.c,w=SV.w,h=SV.h;
+  c.fillStyle='#050A1C';c.fillRect(0,0,w,h);
+  const Rs=Math.min(w*.3,h*.42),cx=w/2,cy=h/2;
+  const g=c.createRadialGradient(cx,cy,0,cx,cy,Rs);
+  g.addColorStop(0,'#FFD3A1');g.addColorStop(.6,'#FF9A55');g.addColorStop(.92,'#E0602A');g.addColorStop(1,'#B2421C');
+  c.fillStyle=g;c.beginPath();c.arc(cx,cy,Rs,0,7);c.fill();
+  const hr=tt*m.range,px=cx+m.v*hr*Rs,py=cy+m.b*Rs,pr=Math.max(m.k*Rs,1);
+  c.setLineDash([3,4]);c.strokeStyle='rgba(255,255,255,.25)';c.beginPath();c.moveTo(0,py);c.lineTo(w,py);c.stroke();c.setLineDash([]);
+  c.fillStyle='#04060f';c.beginPath();c.arc(px,py,pr,0,7);c.fill();
+  c.strokeStyle='rgba(111,211,191,.9)';c.lineWidth=1.2;c.beginPath();c.arc(px,py,pr+9,0,7);c.stroke();
+  c.fillStyle='rgba(236,231,220,.8)';c.font='500 12px "IBM Plex Sans",sans-serif';
+  c.fillText(tp.name.replace('TOI-700 ','planet ')+' (true size)',px+pr+14,py-10);
+  // light curve
+  const C=CV.c,W=CV.w,H=CV.h,pad={l:58,r:18,t:18,b:34};
+  C.fillStyle='#050A1C';C.fillRect(0,0,W,H);
+  const depth=1-m.flux(0),nEff=parseFloat(kN.value)/1e6/Math.sqrt(parseFloat(kS.value));
+  const span=Math.max(depth*1.5,nEff*3.2,120e-6),top=1+span*.35,bot=1-span*1.15;
+  const X=hh=>pad.l+(hh+m.range)/(2*m.range)*(W-pad.l-pad.r),Y=f=>pad.t+(top-f)/(top-bot)*(H-pad.t-pad.b);
+  C.strokeStyle='rgba(255,255,255,.08)';C.fillStyle='rgba(165,175,203,.9)';C.font='12px "IBM Plex Sans",sans-serif';
+  for(let i=0;i<=4;i++){const f=top-(top-bot)*i/4;C.beginPath();C.moveTo(pad.l,Y(f));C.lineTo(W-pad.r,Y(f));C.stroke();
+    C.fillText(Math.round((f-1)*1e6)+'',8,Y(f)+4);}
+  C.save();C.translate(14,H/2+40);C.restore();
+  const step=Math.max(.5,Math.round(m.range/3));
+  for(let hh=-Math.floor(m.range/step)*step;hh<=m.range;hh+=step){C.fillText((hh>0?'+':'')+hh+' h',X(hh)-12,H-10);}
+  C.fillStyle='rgba(165,175,203,.7)';C.fillText('ppm',8,pad.t-4);
+  // noisy points
+  C.fillStyle='rgba(159,182,230,.55)';
+  noise.forEach((n,i)=>{const hh=-m.range+2*m.range*(i+.5)/noise.length,f=m.flux(hh)+n*nEff;C.fillRect(X(hh)-1.5,Y(f)-1.5,3,3);});
+  // model
+  C.strokeStyle='#F29A5B';C.lineWidth=2;C.beginPath();
+  for(let i=0;i<=300;i++){const hh=-m.range+2*m.range*i/300,x=X(hh),y=Y(m.flux(hh));i?C.lineTo(x,y):C.moveTo(x,y);}C.stroke();
+  C.fillStyle='#fff';C.beginPath();C.arc(X(hr),Y(m.flux(hr)),4.5,0,7);C.fill();
+  // readouts
+  document.getElementById('rDepth').textContent=depth>0?Math.round(depth*1e6)+' ppm':'no transit';
+  document.getElementById('rDur').textContent=m.dur>0?fmt(m.dur,1)+' h':'–';
+  document.getElementById('rSnr').textContent=nEff>0?fmt(depth/nEff,1):'∞';
+  document.getElementById('oR').textContent=fmt(parseFloat(kR.value),2)+' R⊕';
+  document.getElementById('oB').textContent=fmt(parseFloat(kB.value),2);
+  document.getElementById('oN').textContent=kN.value+' ppm';
+  document.getElementById('oS').textContent=kS.value;
+}
+let tl=performance.now();
+function tloop(now){const dt=Math.min((now-tl)/1000,.1);tl=now;if(tplaying){tt+=dt*.22;if(tt>1)tt=-1;}drawTransit();requestAnimationFrame(tloop);}
+document.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>loadPlanet(b.dataset.t));
+[kR,kB,kN,kS].forEach(el=>el.addEventListener('input',()=>{if(el===kN||el===kS)return;}));
+const tbtn=document.getElementById('tplay');
+tbtn.onclick=()=>{tplaying=!tplaying;tbtn.textContent=tplaying?'❚❚':'▶';tbtn.setAttribute('aria-label',tplaying?'Pause transit':'Play transit');};
+if(!tplaying){tt=0;tbtn.textContent='▶';tbtn.setAttribute('aria-label','Play transit');}
+loadPlanet('d');requestAnimationFrame(tloop);
+
+/* ---------- Climate ---------- */
+const alb=document.getElementById('alb');
+const fluxEl=document.getElementById('flux');
+const items=[['Earth',1],['Mars',0.43],['TOI-700 d',PL.d.S],['TOI-700 e',PL.e.S]],FMAX=1.6;
+const zl=HZ.out/FMAX*100,zr=HZ.optIn/FMAX*100;
+fluxEl.insertAdjacentHTML('beforeend',items.map(([n,v])=>`<div class="flux-row"><span>${n}</span><div class="flux-track" aria-hidden="true"><div class="zone" style="left:${zl}%;width:${zr-zl}%"></div><i style="width:${v/FMAX*100}%;${n==='Earth'||n==='Mars'?'opacity:.5':''}"></i></div><span class="num">${fmt(v,2)}</span></div>`).join(''));
+function climate(){const A=parseFloat(alb.value),f=(1-A)**.25;
+  const td=STAR.T*Math.sqrt(STAR.R*RSUN_AU/(2*PL.d.a))*f,te=5772*Math.sqrt(RSUN_AU/2)*f;
+  document.getElementById('oA').textContent=fmt(A,2);
+  document.getElementById('tD').textContent=Math.round(td-273.15)+' °C';
+  document.getElementById('tE').textContent=Math.round(te-273.15)+' °C';}
+alb.addEventListener('input',climate);climate();
+
+/* ---------- Math ---------- */
+const Pyr=d.P/365.25,Mk=d.a**3/Pyr**2,depth0=(d.R*REARTH_RSUN/STAR.R)**2,vorb=2*Math.PI*d.a*AU_KM/(d.P*86400),vesc=11.19*Math.sqrt(d.M/d.R);
+const eqs=[
+ ['Starlight from the star','S = L★ / a²,  L★ = R★² (T★ / 5772 K)⁴',`L★ = ${fmt(L,4)} L☉, so S = <b>${fmt(d.S,2)}</b> × Earth`],
+ ['Bare-rock temperature','T = T★ √(R★ / 2a) × (1 − A)^¼',`With A = 0: <b>${Math.round(teq0)} K</b> (${Math.round(teq0-273.15)} °C)`],
+ ['Kepler’s third law check','M★ ≈ a³ / P²   (AU, years)',`${fmt(d.a,4)}³ / ${fmt(Pyr,4)}² = <b>${fmt(Mk,3)}</b> M☉, matching the star’s mass`],
+ ['Transit depth','δ = (R / R★)²',`<b>${Math.round(depth0*1e6)} ppm</b>, a ${fmt(depth0*100,3)}% dip`],
+ ['Bulk density','ρ / ρ⊕ = (M / M⊕) / (R / R⊕)³',`1.25 / 1.073³ = <b>${fmt(rho,2)}</b> × Earth`],
+ ['Orbital speed','v = 2πa / P',`<b>${fmt(vorb,1)} km/s</b>, Earth moves at 29.8 km/s`],
+ ['Escape speed','v = 11.19 km/s × √(M / R)',`<b>${fmt(vesc,1)} km/s</b> (needs the estimated mass)`],
+ ['Light travel time','distance ≈ 31.1 parsecs',`≈ <b>101 years</b> for its light to reach us`]
+];
+document.getElementById('eq').innerHTML=eqs.map(e=>`<article><h3>${e[0]}</h3><div class="f">${e[1]}</div><div class="r">${e[2]}</div></article>`).join('');
+
+/* ---------- Resize ---------- */
+let rt;addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(()=>{S=fit(sky);seedStars();SV=fit(sv);CV=fit(cvv);},120);});
+})();
+</script>
+</body>
+</html>
